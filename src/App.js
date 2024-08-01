@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import logo from "./images/logo.png";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef();
@@ -43,6 +44,15 @@ function Message(props) {
 }
 
 function ChatWindow(props) {
+  if (props.messages.length === 0) {
+    return (
+      <div className="messages">
+        <img src={logo} />
+        <br />
+        Welcome to ChatGPT@Home. Ask me anything
+      </div>
+    );
+  }
   const messages = props.messages.map((m) => {
     return <Message message={m} />;
   });
