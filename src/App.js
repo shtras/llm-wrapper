@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+const AlwaysScrollToBottom = () => {
+  const elementRef = useRef();
+  useEffect(() => elementRef.current.scrollIntoView());
+  return <div ref={elementRef} />;
+};
+
 function Content(props) {
   return (
     <div className={props.className}>
@@ -40,7 +46,12 @@ function ChatWindow(props) {
   const messages = props.messages.map((m) => {
     return <Message message={m} />;
   });
-  return <div className="messages">{messages}</div>;
+  return (
+    <div className="messages">
+      {messages}
+      <AlwaysScrollToBottom />
+    </div>
+  );
 }
 
 function Prompt(props) {
