@@ -1,23 +1,39 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+function Content(props) {
+  return (
+    <div className={props.className}>
+      {props.content.split("\n").map((i) => {
+        return (
+          <>
+            {i}
+            <br />
+          </>
+        );
+      })}
+    </div>
+  );
+}
+
 function Message(props) {
   const role = props.message.role === "user" ? "User" : "Chat";
-  return (
-    <>
-      <p className={props.message.role}>
-        {role}:{" "}
-        {props.message.content.split("\n").map((i) => {
-          return (
-            <>
-              {i}
-              <br />
-            </>
-          );
-        })}
-      </p>
-    </>
-  );
+  const className = `bubble ${role}`;
+  if (role == "User") {
+    return (
+      <div className="message">
+        <Content content={props.message.content} className={className} />
+        <div className="role-name">{role}</div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="message">
+        <div className="role-name">{role}</div>
+        <Content content={props.message.content} className={className} />
+      </div>
+    );
+  }
 }
 
 function ChatWindow(props) {
