@@ -1,38 +1,57 @@
+body {
+  background-color: #212121;
+}
+
+div.messages {
+  width: 80%;
+  padding: 10px;
+  font: 25px "Segoe UI", sans-serif;
+  color: #ececec;
+  line-height: 1.5;
+  tab-size: 4;
+  border-radius: 20px;
+  margin: auto;
+}
+
 .App {
   text-align: center;
+  width: 100%;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+p {
+  background-color: #323232;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+p.user {
+  text-align: right;
+  width: 80%;
+  margin-left: 20%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+p.assistant {
+  text-align: left;
+  width: 80%;
 }
 
-.App-link {
-  color: #61dafb;
+input.prompt {
+  background-color: #2f2f2f;
+  width: 80%;
+  font: 25px "Segoe UI", sans-serif;
+  color: #ececec;
+  padding: 10px;
+  border-radius: 20px;
+  margin: 10px;
+  border-width: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button.send {
+  color: #2f2f2f;
+  font: 25px "Segoe UI", sans-serif;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-width: 0;
+  border-radius: 30px;
+  background-color: #676767;
 }
