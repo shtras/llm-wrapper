@@ -2,9 +2,6 @@ body {
   background-color: #212121;
 }
 
-div {
-  //border: #ececec solid 1px;
-}
 div.message {
   display: flex;
 }
@@ -85,5 +82,28 @@ form {
   border-radius: 20px;
   margin: auto;
   border-width: 0;
+  padding: 5px;
+}
+
+select {
+  background-color: #2f2f2f;
+  border-width: 0;
+  border-radius: 30px;
+  color: #e0e0e0;
+  margin-top: 10px;
+  padding: 5px;
+  padding-left: 15px;
+  font: 18px "Segoe UI", sans-serif;
+}
+
+pre {
+  background-color: #454545;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+code {
+  background-color: #454545;
+  border-radius: 5px;
   padding: 5px;
 }

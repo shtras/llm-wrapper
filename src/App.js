@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import logo from "./images/logo.png";
+import Markdown from "react-markdown";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef();
@@ -11,14 +12,7 @@ const AlwaysScrollToBottom = () => {
 function Content(props) {
   return (
     <div className={props.className}>
-      {props.content.split("\n").map((i) => {
-        return (
-          <>
-            {i}
-            <br />
-          </>
-        );
-      })}
+      <Markdown>{props.content}</Markdown>
     </div>
   );
 }
@@ -26,7 +20,7 @@ function Content(props) {
 function Message(props) {
   const role = props.message.role === "user" ? "User" : "Chat";
   const className = `bubble ${role}`;
-  if (role == "User") {
+  if (role === "User") {
     return (
       <div className="message">
         <Content content={props.message.content} className={className} />
@@ -47,7 +41,7 @@ function ChatWindow(props) {
   if (props.messages.length === 0) {
     return (
       <div className="messages">
-        <img src={logo} />
+        <img alt="ChatGPT@Home" src={logo} />
         <br />
         Welcome to ChatGPT@Home. Ask me anything
       </div>
@@ -64,7 +58,29 @@ function ChatWindow(props) {
   );
 }
 
+function ModelsSelect(props) {
+  function changeModel(e) {
+    props.setModel(e.target.value);
+  }
+  const options = props.models.map((m) => {
+    return <option value={m.path}>{m.name}</option>;
+  });
+  return <select onChange={changeModel}>{options}</select>;
+}
+
 function Prompt(props) {
+  const models = [
+    {
+      name: "Llama 70b",
+      path: "/models/llama-2-70b-chat-hf",
+    },
+    { name: "Llama 7b", path: "/models/llama-2-7b-chat-hf" },
+    {
+      name: "Mixtral 8x7B",
+      path: "/models/mistral_ai/Mixtral-8x7B-v0.1/snapshots/985aa055896a8f943d4a9f2572e6ea1341823841",
+    },
+  ];
+  const [model, setModel] = useState(models[0].path);
   const [prompt, setPrompt] = useState("");
   function sendPrompt(e) {
     e.preventDefault();
@@ -80,7 +96,7 @@ function Prompt(props) {
       body: JSON.stringify({
         messages: [...props.messages, newMessage],
         max_tokens: 2048,
-        model: "/models/llama-2-70b-chat-hf",
+        model: model,
         stream: true,
       }),
     }).then((response) => {
@@ -113,10 +129,7 @@ function Prompt(props) {
         });
         console.log(`Tokens: ${tokens}`);
         props.appendToLastMessage(tokens);
-        //const json = JSON.parse(chunk);
-
         // Otherwise do something here to process current chunk
-
         // Read some more, and call this function again
         return reader.read().then(pump);
       });
@@ -124,18 +137,21 @@ function Prompt(props) {
   }
 
   return (
-    <form method="post" onSubmit={sendPrompt}>
-      <input
-        className="prompt"
-        name="promptText"
-        type="text"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-      />
-      <button className="send" type="submit">
-        ↑
-      </button>
-    </form>
+    <>
+      <form method="post" onSubmit={sendPrompt}>
+        <input
+          className="prompt"
+          name="promptText"
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <button className="send" type="submit">
+          ↑
+        </button>
+      </form>
+      <ModelsSelect models={models} setModel={setModel} />
+    </>
   );
 }
 
