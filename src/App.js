@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import logo from "./images/logo.png";
 import Markdown from "react-markdown";
+import { flushSync } from "react-dom";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef();
@@ -137,7 +138,7 @@ function Prompt(props) {
   }
 
   return (
-    <>
+    <div className="prompt">
       <form method="post" onSubmit={sendPrompt}>
         <input
           className="prompt"
@@ -151,13 +152,15 @@ function Prompt(props) {
         </button>
       </form>
       <ModelsSelect models={models} setModel={setModel} />
-    </>
+    </div>
   );
 }
 
 function App() {
   function appendMessage(message) {
-    setMessages([...messagesRef.current, message]);
+    flushSync(() => {
+      setMessages([...messagesRef.current, message]);
+    });
   }
   function appendToLastMessage(message) {
     setMessages([
@@ -175,14 +178,19 @@ function App() {
     messagesRef.current = messages;
   }, [messages]);
   return (
-    <div className="App">
-      <ChatWindow messages={messages} />
+    <>
+      <div className="App">
+        <div className="logo">
+          <img src={logo} width={128} alt="Small logo" />
+        </div>
+        <ChatWindow messages={messages} />
+      </div>
       <Prompt
         appendMessage={appendMessage}
         appendToLastMessage={appendToLastMessage}
         messages={messages}
       />
-    </div>
+    </>
   );
 }
 

@@ -26,6 +26,7 @@ div.messages {
 
 .App {
   text-align: center;
+  display: flex;
   width: 100%;
 }
 
@@ -47,6 +48,16 @@ div.User {
   text-align: left;
   width: 90%;
   margin-left: 10%;
+}
+
+div.logo {
+}
+
+div.prompt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 input.prompt {
@@ -94,6 +105,7 @@ select {
   padding: 5px;
   padding-left: 15px;
   font: 18px "Segoe UI", sans-serif;
+  width: 20%;
 }
 
 pre {
