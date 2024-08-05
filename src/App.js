@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import logo from "./images/logo.png";
+import logo1 from "./images/logo1.png";
 import Markdown from "react-markdown";
 import { flushSync } from "react-dom";
 
@@ -69,27 +70,61 @@ function ModelsSelect(props) {
   return <select onChange={changeModel}>{options}</select>;
 }
 
+function SettingsRow(props) {
+  return (
+    <div className="settings-row">
+      {props.name}
+      :
+      <input
+        className="settings"
+        type="text"
+        value={props.value}
+        onChange={(e) => props.setValue(e.target.value)}
+      />
+    </div>
+  );
+}
+
+function Settings(props) {
+  const rows = props.settings.map((s) => {
+    return <SettingsRow name={s.name} value={s.value} setValue={s.setter} />;
+  });
+  return rows;
+}
+
 function Prompt(props) {
   const models = [
     {
-      name: "Llama 70b",
+      name: "Llama2 70b",
       path: "/models/llama-2-70b-chat-hf",
     },
-    { name: "Llama 7b", path: "/models/llama-2-7b-chat-hf" },
+    { name: "Llama2 7b", path: "/models/llama-2-7b-chat-hf" },
     {
       name: "Mixtral 8x7B",
       path: "/models/mistral_ai/Mixtral-8x7B-v0.1/snapshots/985aa055896a8f943d4a9f2572e6ea1341823841",
     },
+    { name: "Llama3 70B", path: "/models/Meta-Llama-3-70B" },
   ];
   const [model, setModel] = useState(models[0].path);
+  const [url, setUrl] = useState("http://localhost:8000/v1/chat/completions");
+  const [showSettings, setShowSettings] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [temperature, setTemperature] = useState(0);
+  const [topP, setTopP] = useState(0.95);
+
+  const settings = [
+    { name: "Url", value: url, setter: setUrl },
+    { name: "Temperature", value: temperature, setter: setTemperature },
+    { name: "Top P", value: topP, setter: setTopP },
+  ];
+
   function sendPrompt(e) {
     e.preventDefault();
 
     const newMessage = { role: "user", content: prompt };
     setPrompt("");
     props.appendMessage(newMessage);
-    fetch("http://localhost:8000/v1/chat/completions", {
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,6 +133,8 @@ function Prompt(props) {
         messages: [...props.messages, newMessage],
         max_tokens: 2048,
         model: model,
+        temperature: temperature,
+        top_p: topP,
         stream: true,
       }),
     }).then((response) => {
@@ -121,7 +158,6 @@ function Prompt(props) {
             const json = JSON.parse(c);
             const deltaToken = json.choices[0].delta.content || "";
             if (typeof deltaToken === "string") {
-              console.log(`AAA ${deltaToken}`);
               tokens += deltaToken;
             }
           } catch (e) {
@@ -139,7 +175,7 @@ function Prompt(props) {
 
   return (
     <div className="prompt">
-      <form method="post" onSubmit={sendPrompt}>
+      <form method="post" onSubmit={sendPrompt} autocomplete="off">
         <input
           className="prompt"
           name="promptText"
@@ -151,7 +187,24 @@ function Prompt(props) {
           ↑
         </button>
       </form>
-      <ModelsSelect models={models} setModel={setModel} />
+      {showSettings ? (
+        <div className="settings">
+          <div className="settings-row">
+            <ModelsSelect models={models} setModel={setModel} />
+          </div>
+          <Settings settings={settings} />
+        </div>
+      ) : null}
+      <a
+        href="#"
+        className="settings-toggle"
+        onClick={(e) => {
+          e.preventDefault();
+          setShowSettings(!showSettings);
+        }}
+      >
+        show/hide settings
+      </a>
     </div>
   );
 }
