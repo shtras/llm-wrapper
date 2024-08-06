@@ -116,40 +116,52 @@ function Prompt(props) {
         top_p: topP,
         stream: true,
       }),
-    }).then((response) => {
-      props.appendMessage({ role: "assistant", content: "" });
-      const reader = response.body.getReader();
-      // read() returns a promise that resolves when a value has been received
-      reader.read().then(function pump({ done, value }) {
-        if (done) {
-          // Do something with last chunk of data then exit reader
+    })
+      .then((response) => {
+        if (!response || !response.ok) {
+          props.appendMessage({
+            role: "Error",
+            content:
+              "Something went wrong. Please reload the page to continue.",
+          });
           return;
         }
-
-        // Create json from value
-        const decoder = new TextDecoder();
-        const chunk = decoder.decode(value);
-
-        console.log(chunk);
-        let tokens = "";
-        chunk.split("data:").forEach((c) => {
-          try {
-            const json = JSON.parse(c);
-            const deltaToken = json.choices[0].delta.content || "";
-            if (typeof deltaToken === "string") {
-              tokens += deltaToken;
-            }
-          } catch (e) {
-            console.log(e.Message);
+        props.appendMessage({ role: "assistant", content: "" });
+        const reader = response.body.getReader();
+        // read() returns a promise that resolves when a value has been received
+        reader.read().then(function pump({ done, value }) {
+          if (done) {
+            // Do something with last chunk of data then exit reader
+            return;
           }
+
+          // Create json from value
+          const decoder = new TextDecoder();
+          const chunk = decoder.decode(value);
+
+          // console.log(chunk);
+          let tokens = "";
+          chunk.split("data:").forEach((c) => {
+            try {
+              const json = JSON.parse(c);
+              const deltaToken = json.choices[0].delta.content || "";
+              if (typeof deltaToken === "string") {
+                tokens += deltaToken;
+              }
+            } catch (e) {
+              console.log(e.Message);
+            }
+          });
+          // console.log(`Tokens: ${tokens}`);
+          props.appendToLastMessage(tokens);
+          // Otherwise do something here to process current chunk
+          // Read some more, and call this function again
+          return reader.read().then(pump);
         });
-        console.log(`Tokens: ${tokens}`);
-        props.appendToLastMessage(tokens);
-        // Otherwise do something here to process current chunk
-        // Read some more, and call this function again
-        return reader.read().then(pump);
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    });
   }
 
   return (
