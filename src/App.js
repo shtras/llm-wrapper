@@ -60,16 +60,6 @@ function ChatWindow(props) {
   );
 }
 
-function ModelsSelect(props) {
-  function changeModel(e) {
-    props.setModel(e.target.value);
-  }
-  const options = props.models.map((m) => {
-    return <option value={m.path}>{m.name}</option>;
-  });
-  return <select onChange={changeModel}>{options}</select>;
-}
-
 function SettingsRow(props) {
   return (
     <div className="settings-row">
@@ -93,19 +83,7 @@ function Settings(props) {
 }
 
 function Prompt(props) {
-  const models = [
-    {
-      name: "Llama2 70b",
-      path: "/models/llama-2-70b-chat-hf",
-    },
-    { name: "Llama2 7b", path: "/models/llama-2-7b-chat-hf" },
-    {
-      name: "Mixtral 8x7B",
-      path: "/models/mistral_ai/Mixtral-8x7B-v0.1/snapshots/985aa055896a8f943d4a9f2572e6ea1341823841",
-    },
-    { name: "Llama3 70B", path: "/models/Meta-Llama-3-70B" },
-  ];
-  const [model, setModel] = useState(models[0].path);
+  const [model, setModel] = useState("/models/llama-2-70b-chat-hf");
   const [url, setUrl] = useState("http://localhost:8000/v1/chat/completions");
   const [showSettings, setShowSettings] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -113,6 +91,7 @@ function Prompt(props) {
   const [topP, setTopP] = useState(0.95);
 
   const settings = [
+    { name: "Model", value: model, setter: setModel },
     { name: "Url", value: url, setter: setUrl },
     { name: "Temperature", value: temperature, setter: setTemperature },
     { name: "Top P", value: topP, setter: setTopP },
@@ -189,9 +168,6 @@ function Prompt(props) {
       </form>
       {showSettings ? (
         <div className="settings">
-          <div className="settings-row">
-            <ModelsSelect models={models} setModel={setModel} />
-          </div>
           <Settings settings={settings} />
         </div>
       ) : null}
