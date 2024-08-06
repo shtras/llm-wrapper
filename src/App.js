@@ -176,7 +176,7 @@ function Prompt(props) {
           name="promptText"
           type="text"
           value={prompt}
-          readOnly={props.BeatLoaderloading}
+          readOnly={props.loading}
           onChange={(e) => setPrompt(e.target.value)}
         />
         <button className="send" type="submit">
