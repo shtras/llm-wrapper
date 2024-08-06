@@ -4,6 +4,7 @@ import logo from "./images/logo.png";
 import logo1 from "./images/logo1.png";
 import Markdown from "react-markdown";
 import { flushSync } from "react-dom";
+import SyncLoader from "react-spinners/SyncLoader";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef();
@@ -55,6 +56,7 @@ function ChatWindow(props) {
   return (
     <div className="messages">
       {messages}
+      <SyncLoader color={"#ececec"} loading={props.loading} size={10} />
       <AlwaysScrollToBottom />
     </div>
   );
@@ -99,6 +101,7 @@ function Prompt(props) {
 
   function sendPrompt(e) {
     e.preventDefault();
+    props.setLoading(true);
 
     const newMessage = { role: "user", content: prompt };
     setPrompt("");
@@ -131,6 +134,7 @@ function Prompt(props) {
         // read() returns a promise that resolves when a value has been received
         reader.read().then(function pump({ done, value }) {
           if (done) {
+            props.setLoading(false);
             // Do something with last chunk of data then exit reader
             return;
           }
@@ -172,6 +176,7 @@ function Prompt(props) {
           name="promptText"
           type="text"
           value={prompt}
+          readOnly={props.BeatLoaderloading}
           onChange={(e) => setPrompt(e.target.value)}
         />
         <button className="send" type="submit">
@@ -213,6 +218,7 @@ function App() {
       },
     ]);
   }
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const messagesRef = useRef(messages);
   useEffect(() => {
@@ -224,12 +230,14 @@ function App() {
         <div className="logo">
           <img src={logo} width={128} alt="Small logo" />
         </div>
-        <ChatWindow messages={messages} />
+        <ChatWindow messages={messages} loading={loading} />
       </div>
       <Prompt
         appendMessage={appendMessage}
         appendToLastMessage={appendToLastMessage}
         messages={messages}
+        loading={loading}
+        setLoading={setLoading}
       />
     </>
   );
