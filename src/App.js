@@ -86,7 +86,7 @@ function Settings(props) {
 
 function Prompt(props) {
   const [model, setModel] = useState("/models/llama-2-70b-chat-hf");
-  const [url, setUrl] = useState("http://localhost:8000/v1/chat/completions");
+  const [url, setUrl] = useState("http://localhost:8000/");
   const [showSettings, setShowSettings] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [temperature, setTemperature] = useState(0);
@@ -106,7 +106,7 @@ function Prompt(props) {
     const newMessage = { role: "user", content: prompt };
     setPrompt("");
     props.appendMessage(newMessage);
-    fetch(url, {
+    fetch(url + "v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -168,6 +168,17 @@ function Prompt(props) {
       });
   }
 
+  function fetchModel() {
+    fetch(url + "v1/models", { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => {
+        setModel(data.data[0].root);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   return (
     <div className="prompt">
       <form method="post" onSubmit={sendPrompt} autocomplete="off">
@@ -186,6 +197,7 @@ function Prompt(props) {
       {showSettings ? (
         <div className="settings">
           <Settings settings={settings} />
+          <button onClick={fetchModel}>Fetch model</button>
         </div>
       ) : null}
       <a
